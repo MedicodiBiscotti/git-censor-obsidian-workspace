@@ -61,8 +61,14 @@ def censor_sensitive_information(data: dict) -> dict:
         ]
     ]
     banned_search_words = ["secret"]
+    for tab in data["left"]["children"][0]["children"]:
+        if tab["state"]["type"] == "search":
+            for w in banned_search_words:
+                if w in tab["state"]["state"]["query"]:
+                    tab["state"]["state"]["query"] = ""
+                    break
+    return data
 
 
 if __name__ == "__main__":
-    read_and_write_back("workspace.json", "testdump.json")
-    read_and_write_back_bytes("workspace.json", "testdump.bin")
+    main("workspace.json", "workspace_filtered.json")
