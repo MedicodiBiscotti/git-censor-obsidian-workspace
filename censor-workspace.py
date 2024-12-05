@@ -60,6 +60,7 @@ def censor_sensitive_information(data: dict) -> dict:
             r"Another company/.*\.md",
         ]
     ]
+    banned_search_words = ["secret"]
 
     data["lastOpenFiles"] = [
         f
@@ -67,7 +68,6 @@ def censor_sensitive_information(data: dict) -> dict:
         if not any([p.match(f) for p in banned_file_patterns])
     ]
 
-    banned_search_words = ["secret"]
     for tab in data["left"]["children"][0]["children"]:
         if tab["state"]["type"] == "search":
             for w in banned_search_words:
