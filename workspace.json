@@ -36,6 +36,20 @@
             }
           },
           {
+            "id": "2b196493113ddb46",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Another company/Other system.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Other system"
+            }
+          },
+          {
             "id": "770316af24ec326d",
             "type": "leaf",
             "state": {
@@ -50,7 +64,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -221,6 +235,7 @@
   "lastOpenFiles": [
 	"Some company/Secret system.md",
 	"Innocent note.md",
+  "Another company/Other system.md",
 	"Some compamy/Other secrets.md"
   ]
 }
