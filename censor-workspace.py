@@ -67,6 +67,15 @@ def censor_sensitive_information(data: dict) -> dict:
         if not any([p.match(f) for p in banned_file_patterns])
     ]
 
+    # All windows have a "currentTab" in the "tabs" child. Test what if out of bounds.
+    # Best to adjust if tab is removed.
+    # "active" probably applies to all windows.
+    # Don't use list comprehension. You need the index and id to check if "currentTab" or "active" was removed.
+
+    # "left" and "right" have the same general structure.
+    # Technically, you can move items between them, so each specific tab we look for could be either left or right.
+    # Maybe common code. In that case, use filter function.
+
     banned_search_words = ["secret"]
     for tab in data["left"]["children"][0]["children"]:
         if tab["state"]["type"] == "search":
