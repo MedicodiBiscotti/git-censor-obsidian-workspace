@@ -196,18 +196,6 @@
               "icon": "lucide-tags",
               "title": "Tags"
             }
-          },
-          {
-            "id": "1446e473fd9d952e",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "Some company/How system works.md"
-              },
-              "icon": "lucide-list",
-              "title": "Outline of How system works"
-            }
           }
         ],
         "currentTab": 3

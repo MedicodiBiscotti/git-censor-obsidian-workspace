@@ -74,6 +74,15 @@ def censor_sensitive_information(data: dict) -> dict:
                 if w in tab["state"]["state"]["query"]:
                     tab["state"]["state"]["query"] = ""
                     break
+
+    # Absolutely nutty comprehension.
+    data["right"]["children"][0]["children"] = [
+        t
+        for t in data["right"]["children"][0]["children"]
+        if "file" not in t["state"]["state"]
+        or not any([p.match(t["state"]["state"]["file"]) for p in banned_file_patterns])
+    ]
+
     return data
 
 
