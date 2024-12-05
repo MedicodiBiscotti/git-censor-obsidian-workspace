@@ -67,15 +67,6 @@ def censor_sensitive_information(data: dict) -> dict:
         if not any([p.match(f) for p in banned_file_patterns])
     ]
 
-    # All windows have a "currentTab" in the "tabs" child. Test what if out of bounds.
-    # Best to adjust if tab is removed.
-    # "active" probably applies to all windows.
-    # Don't use list comprehension. You need the index and id to check if "currentTab" or "active" was removed.
-
-    # "left" and "right" have the same general structure.
-    # Technically, you can move items between them, so each specific tab we look for could be either left or right.
-    # Maybe common code. In that case, use filter function.
-
     banned_search_words = ["secret"]
     for tab in data["left"]["children"][0]["children"]:
         if tab["state"]["type"] == "search":
@@ -97,3 +88,38 @@ def censor_sensitive_information(data: dict) -> dict:
 
 if __name__ == "__main__":
     main("workspace.json", "workspace_filtered.json")
+
+
+# Things I understand about workspace.json
+
+# Windows can have multiple children if vertical split. Horizontal split gets weird, though.
+
+# All windows have a "currentTab" in the "tabs" child.
+# If out of bounds, corrects when opened.
+# If first tab selected, removes property instead of setting 0.
+# Best to adjust if tab is removed.
+
+# "active" applies to all windows.
+
+# Don't use list comprehension. You need the index and id to check if "currentTab" or "active" was removed.
+
+# All windows, "left", "right", and "main" have the same general structure.
+# split -> tabs -> leaf.
+# If you have horizontal split windows, it's more complicated.
+# Technically, you can move items between them, so each specific tab we look for could be either left or right.
+# Maybe common code. In that case, use filter function.
+
+# leaf id can be anything. Keeps id even if you open another file (in the same tab).
+# If missing or empty string for "id" or "active", generated when Obsidian reopened.
+
+# If no file opened, leaf node with "type": "empty" is created. Has "id" and possibly the "active" node.
+
+# "left" and "right" sidebars have empty array children when everything is closed.
+# "collapsed" true hides the sidebar. If not set and empty children, it's ugly but works.
+# No children corrects to defaults when Obsidian reopened.
+
+# Backlinks, outline, etc. don't always update to follow the current file.
+# All seem to follow when clicking to different file, but not when keyboard navigating, e.g. ctrl+tab or ctrl+o.
+# Backlinks and outline seem to follow. Outgoing links don't.
+
+# Content of sidebar tabs isn't in file, e.g. search result, actual backlinks from other files.
