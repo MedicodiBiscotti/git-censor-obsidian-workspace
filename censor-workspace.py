@@ -113,6 +113,7 @@ if __name__ == "__main__":
 # If missing or empty string for "id" or "active", generated when Obsidian reopened.
 
 # If no file opened, leaf node with "type": "empty" is created. Has "id" and possibly the "active" node.
+# If instead children is empty, it will generate empty node when opened. Also regenerate split and tabs.
 
 # "left" and "right" sidebars have empty array children when everything is closed.
 # "collapsed" true hides the sidebar. If not set and empty children, it's ugly but works.
