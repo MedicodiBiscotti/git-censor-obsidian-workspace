@@ -105,7 +105,7 @@ def censor_sensitive_information(data: dict) -> dict:
                 raise IndexError(
                     "very odd that current and active indices didn't match"
                 )
-            current_idx = current_idx - max(0, sum(to_remove_mask[: current_idx + 1]))
+            current_idx = max(0, current_idx - sum(to_remove_mask[: current_idx + 1]))
             if current_idx > 0:
                 split["currentTab"] = current_idx
             # could also else: split.pop("currentTab", None)
