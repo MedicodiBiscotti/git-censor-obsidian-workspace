@@ -74,7 +74,8 @@ def censor_sensitive_information(data: dict) -> dict:
         # ignore horizontal split but respect vertical
         for split in window["children"]:
             adjusted_current = False
-            idx_to_remove = []
+            active_idx = None
+            to_remove_mask = [False] * len(split["children"])
             for idx, tab in enumerate(split["children"]):
                 if tab["state"]["type"] == "search":
                     for w in banned_search_words:
@@ -89,11 +90,11 @@ def censor_sensitive_information(data: dict) -> dict:
                         for p in banned_file_patterns
                     ]
                 ):
-                    idx_to_remove.append(idx)
+                    to_remove_mask[idx] = True
             split["children"] = [
                 split["children"][i]
-                for i in range(len(split["children"]))
-                if i not in idx_to_remove
+                for i, remove in enumerate(to_remove_mask)
+                if not remove
             ]
 
     return data
@@ -111,6 +112,8 @@ if __name__ == "__main__":
 # If out of bounds, corrects when opened.
 # If first tab selected, removes property instead of setting 0.
 # Best to adjust if tab is removed.
+
+# When current tab is closed, current index moves down.
 
 # "active" applies to all windows.
 
