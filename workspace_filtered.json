@@ -21,8 +21,7 @@
               "title": "Some note"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -156,7 +155,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "horizontal",
@@ -177,7 +176,7 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "770316af24ec326d",
+  "active": "04e0ca478cb090eb",
   "lastOpenFiles": [
     "Innocent note.md"
   ]

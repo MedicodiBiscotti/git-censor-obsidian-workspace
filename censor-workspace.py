@@ -74,9 +74,15 @@ def censor_sensitive_information(data: dict) -> dict:
         # ignore horizontal split but respect vertical
         for split in window["children"]:
             adjusted_current = False
+            # Reset active index. We need to know if the active tab is getting closed, and what the new active should be.
+            # When going through other windows, it needs to know the active wasn't there.
             active_idx = None
+            # Mask makes filtering and calculating new indices slightly more efficient and intuitive. Also allows numpy refactor.
+            # Alternative is list of indices to remove.
             to_remove_mask = [False] * len(split["children"])
             for idx, tab in enumerate(split["children"]):
+                if tab["id"] == data["active"]:
+                    active_idx = idx
                 if tab["state"]["type"] == "search":
                     for w in banned_search_words:
                         if w in tab["state"]["state"]["query"]:
@@ -91,11 +97,30 @@ def censor_sensitive_information(data: dict) -> dict:
                     ]
                 ):
                     to_remove_mask[idx] = True
+
+            # currentTab can never get lower by removing tabs. If already 0, it won't be in object either before or after.
+            # But we might still need idx to adjust active node to different id.
+            current_idx = split.get("currentTab", 0)
+            if active_idx is not None and active_idx != current_idx:
+                raise IndexError(
+                    "very odd that current and active indices didn't match"
+                )
+            current_idx = current_idx - max(0, sum(to_remove_mask[: current_idx + 1]))
+            if current_idx > 0:
+                split["currentTab"] = current_idx
+            # could also else: split.pop("currentTab", None)
+            elif "currentTab" in split:
+                del split["currentTab"]
+
             split["children"] = [
                 split["children"][i]
                 for i, remove in enumerate(to_remove_mask)
                 if not remove
             ]
+
+            # If active_idx was found, it should equal current tab.
+            if active_idx is not None:
+                data["active"] = split["children"][current_idx]["id"]
 
     return data
 
