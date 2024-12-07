@@ -68,24 +68,33 @@ def censor_sensitive_information(data: dict) -> dict:
         if not any([p.match(f) for p in banned_file_patterns])
     ]
 
+    adjusted_active = False
     # Windows have same structure, and any specific tab could be on either side.
     for window in map(data.get, ["main", "left", "right"]):
         # ignore horizontal split but respect vertical
         for split in window["children"]:
-            for tab in split["children"]:
+            adjusted_current = False
+            idx_to_remove = []
+            for idx, tab in enumerate(split["children"]):
                 if tab["state"]["type"] == "search":
                     for w in banned_search_words:
                         if w in tab["state"]["state"]["query"]:
+                            # Delete search query.
                             tab["state"]["state"]["query"] = ""
                             break
 
-    # Absolutely nutty comprehension.
-    data["right"]["children"][0]["children"] = [
-        t
-        for t in data["right"]["children"][0]["children"]
-        if "file" not in t["state"]["state"]
-        or not any([p.match(t["state"]["state"]["file"]) for p in banned_file_patterns])
-    ]
+                elif "file" in tab["state"]["state"] and any(
+                    [
+                        p.match(tab["state"]["state"]["file"])
+                        for p in banned_file_patterns
+                    ]
+                ):
+                    idx_to_remove.append(idx)
+            split["children"] = [
+                split["children"][i]
+                for i in range(len(split["children"]))
+                if i not in idx_to_remove
+            ]
 
     return data
 
