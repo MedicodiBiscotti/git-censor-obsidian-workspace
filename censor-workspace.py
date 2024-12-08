@@ -151,7 +151,7 @@ def censor_sensitive_information(data: dict) -> dict:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    exclusive_group = parser.add_mutually_exclusive_group()
+    exclusive_group = parser.add_mutually_exclusive_group(required=True)
     exclusive_group.add_argument(
         "--print",
         "-p",
@@ -181,8 +181,6 @@ if __name__ == "__main__":
         main(args.input, args.output)
     elif args.print:
         print("we print")
-    else:
-        print("pick either print or test option")
 
 
 # Things I understand about workspace.json
