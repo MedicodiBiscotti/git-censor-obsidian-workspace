@@ -70,12 +70,10 @@ def censor_sensitive_information(data: dict) -> dict:
         if not any([p.match(f) for p in banned_file_patterns])
     ]
 
-    adjusted_active = False
     # Windows have same structure, and any specific tab could be on either side.
     for split in map(data.get, ["main", "left", "right"]):
         # ignore horizontal split but respect vertical
         for tabs in split["children"]:
-            adjusted_current = False
             # Reset active index. We need to know if the active tab is getting closed, and what the new active should be.
             # When going through other windows, it needs to know the active wasn't there.
             active_idx = None
