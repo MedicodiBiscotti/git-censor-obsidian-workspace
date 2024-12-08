@@ -1,3 +1,4 @@
+import argparse
 import json
 import re
 import secrets
@@ -149,7 +150,39 @@ def censor_sensitive_information(data: dict) -> dict:
 
 
 if __name__ == "__main__":
-    main("workspace.json", "workspace_filtered.json")
+    parser = argparse.ArgumentParser()
+    exclusive_group = parser.add_mutually_exclusive_group()
+    exclusive_group.add_argument(
+        "--print",
+        "-p",
+        action="store_true",
+        help="Print method body to give to git filter-repo",
+    )
+    exclusive_group.add_argument(
+        "--test",
+        "-t",
+        action="store_true",
+        help="perform test censoring operation on files",
+    )
+    parser.add_argument(
+        "--file" "-f",
+        dest="input",
+        default="workspace.json",
+        help="Input file to censor",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default="workspace_filtered.json",
+        help="Output file after censoring",
+    )
+    args = parser.parse_args()
+    if args.test:
+        main(args.input, args.output)
+    elif args.print:
+        print("we print")
+    else:
+        print("pick either print or test option")
 
 
 # Things I understand about workspace.json
