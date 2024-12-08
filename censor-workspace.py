@@ -1,5 +1,6 @@
 import json
 import re
+import secrets
 
 # str.encode should output needed bytes (byte string, I think).
 # json.loads can read bytes in UTF which workspace should be in, I think.
@@ -52,6 +53,7 @@ def main(input: str, output: str):
     write_json_bytes(data, output)
 
 
+# Not abstracted into more functions because I need to ultimately output a single function body, so this is easier.
 def censor_sensitive_information(data: dict) -> dict:
     banned_file_patterns = [
         re.compile(pattern)
@@ -120,8 +122,20 @@ def censor_sensitive_information(data: dict) -> dict:
 
             # If main window and no tabs after filtering, inject node type "empty". Id can be anything.
             # Technically, regenerate tabs. Don't see much reason, but Obsidian does that when closing last tab.
-            if split == "main" and len(tabs["children"] == 0):
-                pass
+            if split["id"] == data["main"]["id"] and len(tabs["children"]) == 0:
+                tabs["id"] = secrets.token_hex(8)
+                tabs["children"].append(
+                    {
+                        "id": secrets.token_hex(8),
+                        "type": "leaf",
+                        "state": {
+                            "type": "empty",
+                            "state": {},
+                            "icon": "lucide-file",
+                            "title": "New tab",
+                        },
+                    }
+                )
 
             # If active_idx was found, it should equal current tab.
             if active_idx is not None:
