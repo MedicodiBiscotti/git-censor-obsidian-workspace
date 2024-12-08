@@ -138,8 +138,14 @@ def censor_sensitive_information(data: dict) -> dict:
                 )
 
             # If active_idx was found, it should equal current tab.
+            # If left or right and all children closed, focus main.
             if active_idx is not None:
-                data["active"] = tabs["children"][current_idx]["id"]
+                if len(tabs["children"]) != 0:
+                    data["active"] = tabs["children"][current_idx]["id"]
+                else:
+                    main_tabs = data["main"]["children"][0]
+                    main_idx = main_tabs.get("currentTab", 0)
+                    data["active"] = main_tabs["children"][main_idx]["id"]
 
     return data
 
