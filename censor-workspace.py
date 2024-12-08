@@ -156,7 +156,7 @@ if __name__ == "__main__":
         "--print",
         "-p",
         action="store_true",
-        help="Print method body to give to git filter-repo",
+        help="print method body to give to git filter-repo",
     )
     exclusive_group.add_argument(
         "--test",
@@ -168,13 +168,13 @@ if __name__ == "__main__":
         "--file" "-f",
         dest="input",
         default="workspace.json",
-        help="Input file to censor",
+        help="input file to censor",
     )
     parser.add_argument(
         "--output",
         "-o",
         default="workspace_filtered.json",
-        help="Output file after censoring",
+        help="output file after censoring",
     )
     args = parser.parse_args()
     if args.test:
