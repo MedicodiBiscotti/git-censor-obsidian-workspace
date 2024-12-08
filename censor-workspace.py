@@ -70,17 +70,17 @@ def censor_sensitive_information(data: dict) -> dict:
 
     adjusted_active = False
     # Windows have same structure, and any specific tab could be on either side.
-    for window in map(data.get, ["main", "left", "right"]):
+    for split in map(data.get, ["main", "left", "right"]):
         # ignore horizontal split but respect vertical
-        for split in window["children"]:
+        for tabs in split["children"]:
             adjusted_current = False
             # Reset active index. We need to know if the active tab is getting closed, and what the new active should be.
             # When going through other windows, it needs to know the active wasn't there.
             active_idx = None
             # Mask makes filtering and calculating new indices slightly more efficient and intuitive. Also allows numpy refactor.
             # Alternative is list of indices to remove.
-            to_remove_mask = [False] * len(split["children"])
-            for idx, tab in enumerate(split["children"]):
+            to_remove_mask = [False] * len(tabs["children"])
+            for idx, tab in enumerate(tabs["children"]):
                 if tab["id"] == data["active"]:
                     active_idx = idx
                 if tab["state"]["type"] == "search":
@@ -100,27 +100,32 @@ def censor_sensitive_information(data: dict) -> dict:
 
             # currentTab can never get lower by removing tabs. If already 0, it won't be in object either before or after.
             # But we might still need idx to adjust active node to different id.
-            current_idx = split.get("currentTab", 0)
+            current_idx = tabs.get("currentTab", 0)
             if active_idx is not None and active_idx != current_idx:
                 raise IndexError(
                     "very odd that current and active indices didn't match"
                 )
             current_idx = max(0, current_idx - sum(to_remove_mask[: current_idx + 1]))
             if current_idx > 0:
-                split["currentTab"] = current_idx
+                tabs["currentTab"] = current_idx
             # could also else: split.pop("currentTab", None)
-            elif "currentTab" in split:
-                del split["currentTab"]
+            elif "currentTab" in tabs:
+                del tabs["currentTab"]
 
-            split["children"] = [
-                split["children"][i]
+            tabs["children"] = [
+                tabs["children"][i]
                 for i, remove in enumerate(to_remove_mask)
                 if not remove
             ]
 
+            # If main window and no tabs after filtering, inject node type "empty". Id can be anything.
+            # Technically, regenerate tabs. Don't see much reason, but Obsidian does that when closing last tab.
+            if split == "main" and len(tabs["children"] == 0):
+                pass
+
             # If active_idx was found, it should equal current tab.
             if active_idx is not None:
-                data["active"] = split["children"][current_idx]["id"]
+                data["active"] = tabs["children"][current_idx]["id"]
 
     return data
 
@@ -130,8 +135,9 @@ if __name__ == "__main__":
 
 
 # Things I understand about workspace.json
+# Also this documentation: https://docs.obsidian.md/Plugins/User+interface/Workspace
 
-# Windows can have multiple children if vertical split. Horizontal split gets weird, though.
+# Split can have multiple children if vertical split. Horizontal split gets weird, though.
 
 # All windows have a "currentTab" in the "tabs" child.
 # If out of bounds, corrects when opened.
@@ -144,18 +150,19 @@ if __name__ == "__main__":
 
 # Don't use list comprehension. You need the index and id to check if "currentTab" or "active" was removed.
 
-# All windows, "left", "right", and "main" have the same general structure.
+# All splits, "left", "right", and "main" have the same general structure.
 # split -> tabs -> leaf.
 # If you have horizontal split windows, it's more complicated.
 # Technically, you can move items between them, so each specific tab we look for could be either left or right.
 # Maybe common code. In that case, use filter function.
 
 # leaf id can be anything. Keeps id even if you open another file (in the same tab).
+# Obsidian uses 16 chars. uuid is 32. secrets with 8 bytes is 16 and also sufficiently random.
 # If missing or empty string for "id" or "active", generated when Obsidian reopened.
 
 # If no file opened, leaf node with "type": "empty" is created. Has "id" and possibly the "active" node.
 # If instead children is empty, it will open most recent file and generate node. Also regenerate split and tabs.
-# If no children and no recent files, generate empty node when opened. 
+# If no children and no recent files, generate empty node when opened.
 # Regeneration of tabs also happens when closing last tab naturally.
 
 # "left" and "right" sidebars have empty array children when everything is closed.
