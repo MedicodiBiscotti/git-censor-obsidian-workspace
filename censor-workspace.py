@@ -156,7 +156,7 @@ if __name__ == "__main__":
         "--print",
         "-p",
         action="store_true",
-        help="print method body to give to git filter-repo",
+        help="print method body to give to git filter-repo --file-info-callback",
     )
     exclusive_group.add_argument(
         "--test",
