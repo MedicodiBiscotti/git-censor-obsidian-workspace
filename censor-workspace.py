@@ -151,10 +151,15 @@ def censor_sensitive_information(data: dict) -> dict:
 
 
 def print_command():
+    paths = [
+        r"Some company/.*\.md",
+        r"Another company/.*\.md",
+    ]
+    words = ["secret"]
     print(
         textwrap.dedent(
             # not raw so we can escape leading newline. \\ instead in the code.
-            """\
+            f"""\
             if not filename != r".obsidian/workspace.json":
                 return (filename, mode, blob_id)
             
@@ -168,11 +173,10 @@ def print_command():
             banned_file_patterns = [
                 re.compile(pattern)
                 for pattern in [
-                    r"Some company/.*\\.md",
-                    r"Another company/.*\\.md",
+                    {paths}
                 ]
             ]
-            banned_search_words = ["secret"]
+            banned_search_words = {words}
 
             data["lastOpenFiles"] = [
                 f
@@ -221,16 +225,16 @@ def print_command():
                     if split["id"] == data["main"]["id"] and len(tabs["children"]) == 0:
                         tabs["id"] = secrets.token_hex(8)
                         tabs["children"].append(
-                            {
+                            {{
                                 "id": secrets.token_hex(8),
                                 "type": "leaf",
-                                "state": {
+                                "state": {{
                                     "type": "empty",
-                                    "state": {},
+                                    "state": {{}},
                                     "icon": "lucide-file",
                                     "title": "New tab",
-                                },
-                            }
+                                }},
+                            }}
                         )
 
                     if active_idx is not None:
