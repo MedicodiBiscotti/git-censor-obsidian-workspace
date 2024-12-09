@@ -21,3 +21,17 @@ Optional parameters default to whatever the test scenario required.
 `-w` is the list of search words to censor, i.e. if secret search term shows up in the search tab, remove it. If search term contains spaces, remember to quote that search term. Otherwise it's interpreted as separate words.
 
 Currently, `-p` and `-w` are only used in `-P` mode because the test scenario is hard-coded. It would make sense to also use parameters there, though, since it can take different test file with `-f`.
+
+## Examples
+
+Command to print the function body that replicates the default test values:
+
+```shell
+python censor-workspace.py -P -w secret -p 'Some company/.*\.md' 'Another company/.*\.md'
+```
+
+Command to call `git filter-repo` with the function body as returned from the script:
+
+```shell
+git filter-repo --sensitive-data-removal --file-info-callback "$(python /path/to/censor-workspace.py -P -w secret -p 'Some company/.*\.md' 'Another company/.*\.md')"
+```
