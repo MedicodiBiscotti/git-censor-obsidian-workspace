@@ -254,33 +254,33 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     exclusive_group = parser.add_mutually_exclusive_group(required=True)
     exclusive_group.add_argument(
-        "--print",
         "-P",
+        "--print",
         action="store_true",
         help="print method body to give to git filter-repo --file-info-callback",
     )
     exclusive_group.add_argument(
-        "--test",
         "-T",
+        "--test",
         action="store_true",
         help="perform test censoring operation on files",
     )
     parser.add_argument(
-        "--file",
         "-f",
+        "--file",
         dest="input",
         default="workspace.json",
         help="input file to censor",
     )
     parser.add_argument(
-        "--output",
         "-o",
+        "--output",
         default="workspace_filtered.json",
         help="output file after censoring",
     )
     parser.add_argument(
-        "--paths",
         "-p",
+        "--paths",
         nargs="*",
         default=[
             r"Some company/.*\.md",
@@ -289,8 +289,8 @@ if __name__ == "__main__":
         help="list of file paths to censor",
     )
     parser.add_argument(
-        "--words",
         "-w",
+        "--words",
         nargs="*",
         default=["secret"],
         help="list of file paths to censor",
