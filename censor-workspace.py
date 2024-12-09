@@ -2,6 +2,7 @@ import argparse
 import json
 import re
 import secrets
+import textwrap
 
 # str.encode should output needed bytes (byte string, I think).
 # json.loads can read bytes in UTF which workspace should be in, I think.
@@ -149,6 +150,107 @@ def censor_sensitive_information(data: dict) -> dict:
     return data
 
 
+def print_command():
+    print(
+        textwrap.dedent(
+            # not raw so we can escape leading newline. \\ instead in the code.
+            """\
+            if not filename != r".obsidian/workspace.json":
+                return (filename, mode, blob_id)
+            
+            import json
+            import re
+            import secrets
+
+            contents = value.get_contents_by_identifier(blob_id)
+            data = json.loads(contents)
+
+            banned_file_patterns = [
+                re.compile(pattern)
+                for pattern in [
+                    r"Some company/.*\\.md",
+                    r"Another company/.*\\.md",
+                ]
+            ]
+            banned_search_words = ["secret"]
+
+            data["lastOpenFiles"] = [
+                f
+                for f in data["lastOpenFiles"]
+                if not any([p.match(f) for p in banned_file_patterns])
+            ]
+
+            for split in map(data.get, ["main", "left", "right"]):
+                for tabs in split["children"]:
+                    active_idx = None
+                    to_remove_mask = [False] * len(tabs["children"])
+                    for idx, tab in enumerate(tabs["children"]):
+                        if tab["id"] == data["active"]:
+                            active_idx = idx
+                        if tab["state"]["type"] == "search":
+                            for w in banned_search_words:
+                                if w in tab["state"]["state"]["query"]:
+                                    tab["state"]["state"]["query"] = ""
+                                    break
+
+                        elif "file" in tab["state"]["state"] and any(
+                            [
+                                p.match(tab["state"]["state"]["file"])
+                                for p in banned_file_patterns
+                            ]
+                        ):
+                            to_remove_mask[idx] = True
+
+                    current_idx = tabs.get("currentTab", 0)
+                    if active_idx is not None and active_idx != current_idx:
+                        raise IndexError(
+                            "very odd that current and active indices didn't match"
+                        )
+                    current_idx = max(0, current_idx - sum(to_remove_mask[: current_idx + 1]))
+                    if current_idx > 0:
+                        tabs["currentTab"] = current_idx
+                    elif "currentTab" in tabs:
+                        del tabs["currentTab"]
+
+                    tabs["children"] = [
+                        tabs["children"][i]
+                        for i, remove in enumerate(to_remove_mask)
+                        if not remove
+                    ]
+
+                    if split["id"] == data["main"]["id"] and len(tabs["children"]) == 0:
+                        tabs["id"] = secrets.token_hex(8)
+                        tabs["children"].append(
+                            {
+                                "id": secrets.token_hex(8),
+                                "type": "leaf",
+                                "state": {
+                                    "type": "empty",
+                                    "state": {},
+                                    "icon": "lucide-file",
+                                    "title": "New tab",
+                                },
+                            }
+                        )
+
+                    if active_idx is not None:
+                        if len(tabs["children"]) != 0:
+                            data["active"] = tabs["children"][current_idx]["id"]
+                        else:
+                            main_tabs = data["main"]["children"][0]
+                            main_idx = main_tabs.get("currentTab", 0)
+                            data["active"] = main_tabs["children"][main_idx]["id"] 
+
+            data_str = json.dumps(data, indent=2)
+            data_bytes = data_str.encode()
+            new_blob_id = value.insert_file_with_contents(data_bytes)
+
+            return (filename, mode, new_blob_id)
+            """
+        )
+    )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     exclusive_group = parser.add_mutually_exclusive_group(required=True)
@@ -180,7 +282,7 @@ if __name__ == "__main__":
     if args.test:
         main(args.input, args.output)
     elif args.print:
-        print("we print")
+        print_command()
 
 
 # Things I understand about workspace.json
