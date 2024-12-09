@@ -150,12 +150,7 @@ def censor_sensitive_information(data: dict) -> dict:
     return data
 
 
-def print_command():
-    paths = [
-        r"Some company/.*\.md",
-        r"Another company/.*\.md",
-    ]
-    words = ["secret"]
+def print_command(paths: list[str], words: list[str]):
     print(
         textwrap.dedent(
             # not raw so we can escape leading newline. \\ instead in the code.
@@ -260,13 +255,13 @@ if __name__ == "__main__":
     exclusive_group = parser.add_mutually_exclusive_group(required=True)
     exclusive_group.add_argument(
         "--print",
-        "-p",
+        "-P",
         action="store_true",
         help="print method body to give to git filter-repo --file-info-callback",
     )
     exclusive_group.add_argument(
         "--test",
-        "-t",
+        "-T",
         action="store_true",
         help="perform test censoring operation on files",
     )
@@ -282,11 +277,29 @@ if __name__ == "__main__":
         default="workspace_filtered.json",
         help="output file after censoring",
     )
+    parser.add_argument(
+        "--paths",
+        "-p",
+        nargs="*",
+        default=[
+            r"Some company/.*\.md",
+            r"Another company/.*\.md",
+        ],
+        help="list of file paths to censor",
+    )
+    parser.add_argument(
+        "--words",
+        "-w",
+        nargs="*",
+        default=["secret"],
+        help="list of file paths to censor",
+    )
+
     args = parser.parse_args()
     if args.test:
         main(args.input, args.output)
     elif args.print:
-        print_command()
+        print_command(args.paths, args.words)
 
 
 # Things I understand about workspace.json
