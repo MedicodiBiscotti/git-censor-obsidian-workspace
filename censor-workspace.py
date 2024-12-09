@@ -168,7 +168,7 @@ def print_command(paths: list[str], words: list[str]):
             banned_file_patterns = [
                 re.compile(pattern)
                 for pattern in [
-                    {paths}
+                    {json.dumps(paths)}
                 ]
             ]
             banned_search_words = {words}
