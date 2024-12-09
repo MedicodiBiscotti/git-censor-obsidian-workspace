@@ -154,6 +154,7 @@ def print_command(paths: list[str], words: list[str]):
     print(
         textwrap.dedent(
             # not raw so we can escape leading newline. \\ instead in the code.
+            # turns out the single quotes from repr wasn't the issue, but json.dumps is still nicer as it's consistent quoting in the code block.
             f"""\
             if not filename != r".obsidian/workspace.json":
                 return (filename, mode, blob_id)
@@ -167,9 +168,7 @@ def print_command(paths: list[str], words: list[str]):
 
             banned_file_patterns = [
                 re.compile(pattern)
-                for pattern in [
-                    {json.dumps(paths)}
-                ]
+                for pattern in {json.dumps(paths)}
             ]
             banned_search_words = {json.dumps(words)}
 
