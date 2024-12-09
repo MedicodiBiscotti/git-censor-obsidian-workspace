@@ -171,7 +171,7 @@ def print_command(paths: list[str], words: list[str]):
                     {json.dumps(paths)}
                 ]
             ]
-            banned_search_words = {words}
+            banned_search_words = {json.dumps(words)}
 
             data["lastOpenFiles"] = [
                 f
