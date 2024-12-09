@@ -266,7 +266,8 @@ if __name__ == "__main__":
         help="perform test censoring operation on files",
     )
     parser.add_argument(
-        "--file" "-f",
+        "--file",
+        "-f",
         dest="input",
         default="workspace.json",
         help="input file to censor",
