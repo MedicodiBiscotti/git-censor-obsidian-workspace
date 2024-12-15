@@ -156,7 +156,7 @@ def print_command(paths: list[str], words: list[str]):
             # not raw so we can escape leading newline. \\ instead in the code.
             # turns out the single quotes from repr wasn't the issue, but json.dumps is still nicer as it's consistent quoting in the code block.
             f"""\
-            if not filename != r".obsidian/workspace.json":
+            if filename != r".obsidian/workspace.json":
                 return (filename, mode, blob_id)
             
             import json
