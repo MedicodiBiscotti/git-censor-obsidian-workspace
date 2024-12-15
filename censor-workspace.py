@@ -342,3 +342,5 @@ if __name__ == "__main__":
 # Backlinks and outline seem to follow. Outgoing links don't.
 
 # Content of sidebar tabs isn't in file, e.g. search result, actual backlinks from other files.
+
+# lastOpenFiles regenerates to empty list when opening Obsidian if not present.
