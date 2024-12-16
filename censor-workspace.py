@@ -64,7 +64,7 @@ def censor_sensitive_information(data: dict) -> dict:
             r"Another company/.*\.md",
         ]
     ]
-    banned_search_words = ["secret"]
+    banned_search_words = ["Secret"]
 
     data["lastOpenFiles"] = [
         f
@@ -87,7 +87,7 @@ def censor_sensitive_information(data: dict) -> dict:
                     active_idx = idx
                 if tab["state"]["type"] == "search":
                     for w in banned_search_words:
-                        if w in tab["state"]["state"]["query"]:
+                        if w.lower() in tab["state"]["state"]["query"].lower():
                             # Delete search query.
                             tab["state"]["state"]["query"] = ""
                             break
@@ -187,7 +187,7 @@ def print_command(paths: list[str], words: list[str]):
                             active_idx = idx
                         if tab["state"]["type"] == "search":
                             for w in banned_search_words:
-                                if w in tab["state"]["state"]["query"]:
+                                if w.lower() in tab["state"]["state"]["query"].lower():
                                     tab["state"]["state"]["query"] = ""
                                     break
 
