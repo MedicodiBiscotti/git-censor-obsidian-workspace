@@ -105,10 +105,6 @@ def censor_sensitive_information(data: dict) -> dict:
             # currentTab can never get lower by removing tabs. If already 0, it won't be in object either before or after.
             # But we might still need idx to adjust active node to different id.
             current_idx = tabs.get("currentTab", 0)
-            if active_idx is not None and active_idx != current_idx:
-                raise IndexError(
-                    "very odd that current and active indices didn't match"
-                )
             current_idx = max(0, current_idx - sum(to_remove_mask[: current_idx + 1]))
             if current_idx > 0:
                 tabs["currentTab"] = current_idx
@@ -140,6 +136,7 @@ def censor_sensitive_information(data: dict) -> dict:
                 )
 
             # If active_idx was found, it should equal current tab.
+            # active and current index can apparently not match in rare cases. 1/325 in my case.
             # If left or right and all children closed, focus main.
             if active_idx is not None:
                 if len(tabs["children"]) != 0:
@@ -205,10 +202,6 @@ def print_command(paths: list[str], words: list[str]):
                             to_remove_mask[idx] = True
 
                     current_idx = tabs.get("currentTab", 0)
-                    if active_idx is not None and active_idx != current_idx:
-                        raise IndexError(
-                            "very odd that current and active indices didn't match"
-                        )
                     current_idx = max(0, current_idx - sum(to_remove_mask[: current_idx + 1]))
                     if current_idx > 0:
                         tabs["currentTab"] = current_idx
