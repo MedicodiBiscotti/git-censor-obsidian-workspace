@@ -66,11 +66,13 @@ def censor_sensitive_information(data: dict) -> dict:
     ]
     banned_search_words = ["Secret"]
 
-    data["lastOpenFiles"] = [
-        f
-        for f in data["lastOpenFiles"]
-        if not any([p.match(f) for p in banned_file_patterns])
-    ]
+    # Should always be there, but check to be safe.
+    if "lastOpenFiles" in data:
+        data["lastOpenFiles"] = [
+            f
+            for f in data["lastOpenFiles"]
+            if not any([p.match(f) for p in banned_file_patterns])
+        ]
 
     # Windows have same structure, and any specific tab could be on either side.
     for split in map(data.get, ["main", "left", "right"]):
@@ -174,11 +176,12 @@ def print_command(paths: list[str], words: list[str]):
             ]
             banned_search_words = {json.dumps(words)}
 
-            data["lastOpenFiles"] = [
-                f
-                for f in data["lastOpenFiles"]
-                if not any([p.match(f) for p in banned_file_patterns])
-            ]
+            if "lastOpenFiles" in data:
+                data["lastOpenFiles"] = [
+                    f
+                    for f in data["lastOpenFiles"]
+                    if not any([p.match(f) for p in banned_file_patterns])
+                ]
 
             for split in map(data.get, ["main", "left", "right"]):
                 for tabs in split["children"]:
