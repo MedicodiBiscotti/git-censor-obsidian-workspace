@@ -18,6 +18,8 @@ Optional parameters default to whatever the test scenario required.
 
 `-p` is the list of file paths to censor. Must be supplied as **regex**. You can either escape the `\` for the file extension (`\.md`) or not bother. Python does that itself, and it works either way.
 
+The regex currently uses `match`, meaning it has to **start** with the pattern, not necessarily be a `fullmatch`, though that might change because that could just as easily be the case. Just add `\.*` to folders.
+
 `-w` is the list of search words to censor, i.e. if secret search term shows up in the search tab, remove it. If search term contains spaces, remember to quote that search term. Otherwise, it's interpreted as separate words.
 
 Currently, `-p` and `-w` are only used in `-P` mode because the test scenario is hard-coded. It would make sense to also use parameters there, though, since it can take different test file with `-f`.
