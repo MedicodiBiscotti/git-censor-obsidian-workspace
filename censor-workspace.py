@@ -164,6 +164,8 @@ def print_command(paths: list[str], words: list[str]):
             import secrets
 
             contents = value.get_contents_by_identifier(blob_id)
+            if contents == b"":
+                return (filename, mode, blob_id)
             data = json.loads(contents)
 
             banned_file_patterns = [
